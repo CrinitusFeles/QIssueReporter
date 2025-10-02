@@ -23,7 +23,7 @@ class ContentWidget(QtWidgets.QWidget):
         loadUi(Path(__file__).parent / 'viewer_content.ui', self)
         self.number_label.setText(f'#{data.number}')
         self.title_button.setText(f' {data.title}')
-        version: str = data.content.split()[0]
+        version: str = data.content.split('\n')[0]
         if not version.startswith('v'):
             version = ''
         else:
@@ -42,8 +42,8 @@ class ContentWidget(QtWidgets.QWidget):
         self.issue_type.clicked.connect(self.issue_clicked)
         self.issue_type.setMaximumWidth(100)
         self.horizontal_layout.insertWidget(0, self.issue_type)
-        if len(data.content.split()) > 1:
-            text: str = '\n'.join([line for line in data.content.split()[1:]])
+        if len(data.content.split('\n')) > 1:
+            text: str = '\n'.join([line for line in data.content.split('\n')[1:]])
             self.text_browser.setMarkdown(text)
         else:
             self.text_browser.setMarkdown(data.content)
