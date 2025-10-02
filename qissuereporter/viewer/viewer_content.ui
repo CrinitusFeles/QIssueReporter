@@ -27,6 +27,7 @@
     <widget class="QPushButton" name="title_button">
      <property name="font">
       <font>
+       <family>Arial</family>
        <pointsize>28</pointsize>
        <weight>75</weight>
        <bold>true</bold>
