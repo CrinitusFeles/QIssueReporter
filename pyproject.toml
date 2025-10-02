@@ -16,3 +16,11 @@ dependencies = [
 [tool.uv.sources]
 qcustomwindow = { git = "https://github.com/CrinitusFeles/QCustomWindow" }
 qcustomwidgets = { git = "https://github.com/CrinitusFeles/QCustomWidgets" }
+
+
+[tool.setuptools.package-data]
+"*" = ["*.ui", "*.svg", "*.ico"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["astrosync_pyqt*"]
