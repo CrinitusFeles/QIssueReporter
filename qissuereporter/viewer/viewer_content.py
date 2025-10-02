@@ -5,7 +5,6 @@ from PyQt6 import QtWidgets, QtGui, QtCore
 from PyQt6.uic.load_ui import loadUi
 from qissuereporter.creator.report_widget import Screenshot
 from qissuereporter.models import IssueContentModel
-from qissuereporter.image_view.image_viewer import ImageViewer
 
 
 class ContentWidget(QtWidgets.QWidget):

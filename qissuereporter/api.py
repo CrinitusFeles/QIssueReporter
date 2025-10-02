@@ -7,7 +7,6 @@ from loguru import logger
 from pydantic_core import ValidationError
 
 
-
 def header(token: str):
     return {
         'Authorization': f'token {token}',

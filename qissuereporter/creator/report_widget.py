@@ -2,11 +2,9 @@ from pathlib import Path
 from PyQt6 import QtWidgets, QtGui, QtCore
 from PyQt6.uic.load_ui import loadUi
 from loguru import logger
-
 from qissuereporter.models import BugReportModel
 from qissuereporter.image_view.screenshot_mini import Screenshot
 from qissuereporter.creator.text_edit import CustomTextEdit
-
 
 
 class BugReport(QtWidgets.QWidget):
