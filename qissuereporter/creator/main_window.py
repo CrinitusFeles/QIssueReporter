@@ -6,15 +6,16 @@ import signal
 from qissuereporter.creator.report_widget import BugReport
 from qissuereporter.models import BugReportModel
 from qissuereporter.api import create_issue
+from qissuereporter import __version__
 
 
 class ReporterWindow(CustomWindow):
     report_created = QtCore.pyqtSignal(BugReportModel)
-    def __init__(self, url: str, token: str) -> None:
+    def __init__(self, version: str, url: str, token: str) -> None:
         super().__init__()
         self.url: str = url
         self.token: str = token
-        self.widget = BugReport('0.1.0')
+        self.widget = BugReport(version)
         self.setTitle('Issue Reporter')
         self.widget.report_created.connect(self.on_report_created)
         self.body_layout.addWidget(self.widget)
@@ -34,7 +35,7 @@ if __name__ == '__main__':
     asyncio.set_event_loop(event_loop)
     app_close_event = asyncio.Event()
     app.aboutToQuit.connect(app_close_event.set)
-    w: ReporterWindow = ReporterWindow('', '')
+    w: ReporterWindow = ReporterWindow(__version__, '', '')
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     w.show()
     with event_loop:

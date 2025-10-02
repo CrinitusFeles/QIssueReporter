@@ -4,6 +4,7 @@ import signal
 from PyQt6 import QtWidgets
 from qissuereporter.creator.main_window import ReporterWindow
 from qissuereporter.viewer.main_window import ViewerWindow
+from qissuereporter import __version__
 
 
 token = ''
@@ -21,7 +22,7 @@ if __name__ == '__main__':
     app_close_event = asyncio.Event()
     app.aboutToQuit.connect(app_close_event.set)
     viewer: ViewerWindow = ViewerWindow(url, token)
-    reporter: ReporterWindow = ReporterWindow(url, token)
+    reporter: ReporterWindow = ReporterWindow(__version__, url, token)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     viewer.show()
     reporter.show()
