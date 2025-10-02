@@ -8,11 +8,13 @@ from pydantic_core import ValidationError
 
 
 def header(token: str):
-    return {
-        'Authorization': f'token {token}',
+    auth: dict[str, str] = {'Authorization': f'token {token}'} if token else {}
+    result: dict[str, str] = {
         'Accept': 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28'
     }
+    result.update(auth)
+    return result
 
 
 async def create_issue(url: str, token: str, body: dict):
