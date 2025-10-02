@@ -23,4 +23,4 @@ qcustomwidgets = { git = "https://github.com/CrinitusFeles/QCustomWidgets" }
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["astrosync_pyqt*"]
+include = ["qissuereporter*"]
