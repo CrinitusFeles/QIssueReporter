@@ -55,7 +55,7 @@ class BugReport(QtWidgets.QWidget):
             self.size_label.setStyleSheet('color: palette(text);')
 
     def on_report_button_pressed(self):
-        details: str = self.text_edit.toPlainText()
+        details: str = f'v{self.version}\n' + self.text_edit.toPlainText()
         title: str = self.title_line_edit.text()
         if not title:
             logger.warning('Title must not be empty')
@@ -70,6 +70,7 @@ class BugReport(QtWidgets.QWidget):
             full_size += len(image_data)
         report = BugReportModel(report_type=report_type, title=title,
                                 details=details, images=images_b64,
+                                version=self.version,
                                 images_size=full_size,
                                 client_version=self.version)
         self.report_created.emit(report)

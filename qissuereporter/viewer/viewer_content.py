@@ -23,22 +23,30 @@ class ContentWidget(QtWidgets.QWidget):
         loadUi(Path(__file__).parent / 'viewer_content.ui', self)
         self.number_label.setText(f'#{data.number}')
         self.title_button.setText(f' {data.title}')
-        if data.is_opened:
-            self.dt_label.setText(f'opened {data.created_at}')
+        version: str = data.content.split()[0]
+        if not version.startswith('v'):
+            version = ''
         else:
-            self.dt_label.setText(f'closed {data.closed_at}')
+            version = f'({version})'
+        if data.is_opened:
+            self.dt_label.setText(f'opened {data.created_at} {version}')
+        else:
+            self.dt_label.setText(f'closed {data.closed_at} {version}')
             icon = QtGui.QIcon(':/svg/issue-closed')
             self.title_button.setIcon(icon)
         self.url: str = data.url
-        self.images = data.images
+        self._images: list[str] = data.images
         self.images_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         self.issue_type = Button(data.issue_type)
         self.set_issue_type_style(data.issue_type)
         self.issue_type.clicked.connect(self.issue_clicked)
         self.issue_type.setMaximumWidth(100)
         self.horizontal_layout.insertWidget(0, self.issue_type)
-        # self.horizontal_layout.setContentsMargins(0, 0, 30, 0)
-        self.text_browser.setMarkdown(data.content)
+        if len(data.content.split()) > 1:
+            text: str = '\n'.join([line for line in data.content.split()[1:]])
+            self.text_browser.setMarkdown(text)
+        else:
+            self.text_browser.setMarkdown(data.content)
         self.fold_button = Button('', [':/svg/arrow-up-small',
                                        ':/svg/arrow-down-small'],
                                   flat=True, iterate_icons=True)
@@ -75,17 +83,13 @@ class ContentWidget(QtWidgets.QWidget):
         state = self.text_browser.isHidden()
         if state:
             self.text_browser.show()
-            if self.images:
+            if self._images:
                 self.scroll_area.show()
         else:
             self.text_browser.hide()
-            if self.images:
+            if self._images:
                 self.scroll_area.hide()
 
 
     def issue_clicked(self):
         QtGui.QDesktopServices.openUrl(QtCore.QUrl(self.url))
-
-    # def resizeEvent(self, a0: QtGui.QResizeEvent | None) -> None:
-    #     super().resizeEvent(a0)
-    #     self.fold_button.move(self.width() - 40, 60)

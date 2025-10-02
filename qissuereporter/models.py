@@ -11,6 +11,7 @@ class BugReportModel(BaseModel):
     client_version: str
     report_type: str
     title: str
+    version: str
     details: str
     images: list[str]
     images_size: float
@@ -28,7 +29,7 @@ class BugReportModel(BaseModel):
         body: dict[str, str] = {
             'title': self.title,
             'type': report_type.get(self.report_type, 'Bug'),
-            'body': content
+            'body': content,
         }
         return body
 
