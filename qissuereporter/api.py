@@ -75,7 +75,7 @@ def calc_delta(created_at: str) -> str:
             mins: int = round(creation_delta.seconds / 60)
             if mins == 0:
                 seconds: int = creation_delta.seconds
-                return f'{seconds} minute{"s" if seconds > 1 else ""} agp'
+                return f'{seconds} second{"s" if seconds > 1 else ""} agp'
             return f'{mins} minute{"s" if mins > 1 else ""} agp'
         return f'{hours} hour{"s" if hours > 1 else ""} agp'
     return f'{days} day{"s" if days > 1 else ""} ago'
