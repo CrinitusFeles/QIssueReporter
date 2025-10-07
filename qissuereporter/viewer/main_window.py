@@ -48,6 +48,11 @@ class ViewerWindow(CustomWindow):
                     closed_at = calc_delta(issue['closed_at'])
                 else:
                     closed_at = issue['closed_at']
+                issue_type = issue['type']
+                if issue_type is None:
+                    issue_name: str = 'Bug'
+                else:
+                    issue_name = issue_type['name']
                 model = IssueContentModel(images=images,
                                           number=issue['number'],
                                           url=issue['html_url'],
@@ -55,7 +60,7 @@ class ViewerWindow(CustomWindow):
                                           title=issue['title'],
                                           content=content,
                                           created_at=created_at,
-                                          issue_type=issue['type']['name'],
+                                          issue_type=issue_name,
                                           closed_at=closed_at,
                                           close_reason=issue['state_reason'])
                 models.append(model)
