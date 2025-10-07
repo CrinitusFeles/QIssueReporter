@@ -50,9 +50,11 @@ async def get_issues(url: str, token: str) -> list[dict]:
                 print(e.errors())
         return []
 
-def extract_images(content: str) -> tuple[list[str], str]:
+def extract_images(content: str | None) -> tuple[list[str], str]:
     images: list[str] = []
     remove_lines = []
+    if not content:
+        return [], ''
     for i, line in enumerate(content.split('\n')):
         subs = '<img src="data:image/jpeg;base64,'
         if line.startswith(subs):
