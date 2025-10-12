@@ -71,15 +71,17 @@ def extract_images(content: str | None) -> tuple[list[str], str]:
 def calc_delta(created_at: str) -> str:
     creation_delta: timedelta = datetime.now(UTC) - datetime.fromisoformat(created_at)
     days: int = creation_delta.days
+    if days < 0:
+        return 'now'
     if days == 0:
         hours: int = round(creation_delta.seconds / 3600)
         if hours == 0:
             mins: int = round(creation_delta.seconds / 60)
             if mins == 0:
                 seconds: int = creation_delta.seconds
-                return f'{seconds} second{"s" if seconds > 1 else ""} agp'
-            return f'{mins} minute{"s" if mins > 1 else ""} agp'
-        return f'{hours} hour{"s" if hours > 1 else ""} agp'
+                return f'{seconds} second{"s" if seconds > 1 else ""} ago'
+            return f'{mins} minute{"s" if mins > 1 else ""} ago'
+        return f'{hours} hour{"s" if hours > 1 else ""} ago'
     return f'{days} day{"s" if days > 1 else ""} ago'
 
 
