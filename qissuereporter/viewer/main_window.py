@@ -1,4 +1,5 @@
 import asyncio
+import json
 import qasync
 import signal
 from qcustomwindow import CustomWindow
@@ -6,8 +7,8 @@ from PyQt6 import QtWidgets, QtCore
 from qcustomwidgets import Button
 from qcustomwidgets.widgets.spinner import Spinner
 from qissuereporter.viewer.viewer import Viewer
-from qissuereporter.models import BugReportModel, IssueContentModel
-from qissuereporter.api import calc_delta, get_issues, extract_images
+from qissuereporter.models import BugReportModel, ContentJSON, IssueContentModel
+from qissuereporter.api import calc_delta, get_issues
 
 
 class ViewerWindow(CustomWindow):
@@ -42,10 +43,10 @@ class ViewerWindow(CustomWindow):
         if answer:
             models: list[IssueContentModel] = []
             for issue in answer:
-                images, content = extract_images(issue['body'])
+                content_json: ContentJSON = ContentJSON.model_validate(issue['body'])
                 created_at: str = calc_delta(issue['created_at'])
                 if issue['closed_at']:
-                    closed_at = calc_delta(issue['closed_at'])
+                    closed_at: str = calc_delta(issue['closed_at'])
                 else:
                     closed_at = issue['closed_at']
                 issue_type = issue['type']
@@ -53,12 +54,12 @@ class ViewerWindow(CustomWindow):
                     issue_name: str = 'Bug'
                 else:
                     issue_name = issue_type['name']
-                model = IssueContentModel(images=images,
+                model = IssueContentModel(images=content_json.images,
                                           number=issue['number'],
                                           url=issue['html_url'],
                                           is_opened=(issue['state'] == 'open'),
                                           title=issue['title'],
-                                          content=content,
+                                          content=content_json.content,
                                           created_at=created_at,
                                           issue_type=issue_name,
                                           closed_at=closed_at,

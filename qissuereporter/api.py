@@ -50,23 +50,6 @@ async def get_issues(url: str, token: str) -> list[dict]:
                 print(e.errors())
         return []
 
-def extract_images(content: str | None) -> tuple[list[str], str]:
-    images: list[str] = []
-    remove_lines = []
-    if not content:
-        return [], ''
-    for i, line in enumerate(content.split('\n')):
-        subs = '<img src="data:image/jpeg;base64,'
-        if line.startswith(subs):
-            end_index: int = line.find('"', len(subs))
-            images.append(line[len(subs):end_index])
-            remove_lines.append(i)
-    lines = content.split('\n')
-    for num in remove_lines[::-1]:
-        lines.pop(num)
-
-    return images, '\n'.join(lines)
-
 
 def calc_delta(created_at: str) -> str:
     creation_delta: timedelta = datetime.now(UTC) - datetime.fromisoformat(created_at)

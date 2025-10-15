@@ -1,10 +1,10 @@
 import base64
 from pathlib import Path
-from qcustomwidgets import Button, ImageBox
+from qcustomwidgets import Button
 from PyQt6 import QtWidgets, QtGui, QtCore
 from PyQt6.uic.load_ui import loadUi
 from qissuereporter.creator.report_widget import Screenshot
-from qissuereporter.models import IssueContentModel
+from qissuereporter.models import ContentJSON, IssueContentModel
 
 
 class ContentWidget(QtWidgets.QWidget):
@@ -41,11 +41,13 @@ class ContentWidget(QtWidgets.QWidget):
         self.issue_type.clicked.connect(self.issue_clicked)
         self.issue_type.setMaximumWidth(100)
         self.horizontal_layout.insertWidget(0, self.issue_type)
-        if len(data.content.split('\n')) > 1:
-            text: str = '\n'.join([line for line in data.content.split('\n')[1:]])
-            self.text_browser.setMarkdown(text)
-        else:
+        try:
+            model: ContentJSON = ContentJSON.model_validate_json(data.content)
+            self.text_browser.setMarkdown(model.content)
+        except Exception as err:
+            print(f'Failed to parse issue content: {err}')
             self.text_browser.setMarkdown(data.content)
+
         self.fold_button = Button('', [':/svg/arrow-up-small',
                                        ':/svg/arrow-down-small'],
                                   flat=True, iterate_icons=True)

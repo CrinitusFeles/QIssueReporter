@@ -20,14 +20,17 @@ class BugReportModel(BaseModel):
             'Feature Request': 'Feature',
             'Performance Issue (freeze, slow, crash)': 'Task'
         }
-        images: str = '\n'.join([f'<img src=\"data:image/jpeg;base64,{image}\"'\
-                                 f' alt=\"image_{i}\"/>'
-                                 for i, image in enumerate(self.images)])
-        content: str = self.details + f'\n{images}' if len(images) > 1 else self.details
+        images: list[str] = [f'<img src=\"data:image/jpeg;base64,{image}\"'\
+                                  f' alt=\"image_{i}\"/>'
+                                  for i, image in enumerate(self.images)]
+        content_model = ContentJSON(content=self.details,
+                                    version=self.version,
+                                    images=images,
+                                    username=self.username)
         body: dict[str, str] = {
             'title': self.title,
             'type': report_type.get(self.report_type, 'Bug'),
-            'body': content,
+            'body': content_model.model_dump_json(indent=4),
         }
         return body
 
@@ -38,6 +41,13 @@ class IssueBase(BaseModel):
     url: str # "https://api.github.com/repos/octocat/Hello-World/labels/bug",
     description: str | None = None # "Something isn't working",
     html_url: str | None = None # "https://github.com/octocat",
+
+
+class ContentJSON(BaseModel):
+    content: str
+    images: list[str]
+    version: str
+    username: str
 
 
 class IssueContentModel(BaseModel):
