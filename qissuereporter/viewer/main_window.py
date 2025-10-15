@@ -1,5 +1,5 @@
 import asyncio
-import json
+from pydantic import ValidationError
 import qasync
 import signal
 from qcustomwindow import CustomWindow
@@ -9,6 +9,9 @@ from qcustomwidgets.widgets.spinner import Spinner
 from qissuereporter.viewer.viewer import Viewer
 from qissuereporter.models import BugReportModel, ContentJSON, IssueContentModel
 from qissuereporter.api import calc_delta, get_issues
+
+
+image_str = '<img src="data:image/jpeg;base64,'
 
 
 class ViewerWindow(CustomWindow):
@@ -43,7 +46,17 @@ class ViewerWindow(CustomWindow):
         if answer:
             models: list[IssueContentModel] = []
             for issue in answer:
-                content_json: ContentJSON = ContentJSON.model_validate(issue['body'])
+                try:
+                    content_json: ContentJSON = ContentJSON.model_validate_json(issue['body'])
+                    images = [image[len(image_str):-17] for image in content_json.images]
+                    content = content_json.content
+                    username = content_json.username
+                    version = content_json.version
+                except ValidationError as err:
+                    images = []
+                    content = issue['body']
+                    username = ''
+                    version = ''
                 created_at: str = calc_delta(issue['created_at'])
                 if issue['closed_at']:
                     closed_at: str = calc_delta(issue['closed_at'])
@@ -54,12 +67,14 @@ class ViewerWindow(CustomWindow):
                     issue_name: str = 'Bug'
                 else:
                     issue_name = issue_type['name']
-                model = IssueContentModel(images=content_json.images,
+                model = IssueContentModel(images=images,
                                           number=issue['number'],
                                           url=issue['html_url'],
                                           is_opened=(issue['state'] == 'open'),
                                           title=issue['title'],
-                                          content=content_json.content,
+                                          version=version,
+                                          username=username,
+                                          content=content,
                                           created_at=created_at,
                                           issue_type=issue_name,
                                           closed_at=closed_at,

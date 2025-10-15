@@ -1,4 +1,5 @@
 import base64
+import json
 from pathlib import Path
 from qcustomwidgets import Button
 from PyQt6 import QtWidgets, QtGui, QtCore
@@ -22,15 +23,13 @@ class ContentWidget(QtWidgets.QWidget):
         loadUi(Path(__file__).parent / 'viewer_content.ui', self)
         self.number_label.setText(f'#{data.number}')
         self.title_button.setText(f' {data.title}')
-        version: str = data.content.split('\n')[0]
-        if not version.startswith('v'):
-            version = ''
-        else:
-            version = f'({version})'
+        user_str: str = f' by {data.username}' if data.username else ''
+        version_str = f' (v{data.version})' if data.version else ''
+        self.text_browser.setMarkdown(data.content)
         if data.is_opened:
-            self.dt_label.setText(f'opened {data.created_at} {version}')
+            self.dt_label.setText(f'opened {data.created_at}{user_str}{version_str}')
         else:
-            self.dt_label.setText(f'closed {data.closed_at} {version}')
+            self.dt_label.setText(f'closed {data.closed_at} {version_str}')
             icon = QtGui.QIcon(':/svg/issue-closed')
             self.title_button.setIcon(icon)
         self.url: str = data.url
@@ -41,12 +40,7 @@ class ContentWidget(QtWidgets.QWidget):
         self.issue_type.clicked.connect(self.issue_clicked)
         self.issue_type.setMaximumWidth(100)
         self.horizontal_layout.insertWidget(0, self.issue_type)
-        try:
-            model: ContentJSON = ContentJSON.model_validate_json(data.content)
-            self.text_browser.setMarkdown(model.content)
-        except Exception as err:
-            print(f'Failed to parse issue content: {err}')
-            self.text_browser.setMarkdown(data.content)
+
 
         self.fold_button = Button('', [':/svg/arrow-up-small',
                                        ':/svg/arrow-down-small'],
