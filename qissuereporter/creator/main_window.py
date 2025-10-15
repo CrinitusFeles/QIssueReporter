@@ -11,11 +11,12 @@ from qissuereporter import __version__
 
 class ReporterWindow(CustomWindow):
     report_created = QtCore.pyqtSignal(BugReportModel)
-    def __init__(self, version: str, url: str, token: str) -> None:
+    def __init__(self, version: str, url: str, token: str,
+                 username: str = '') -> None:
         super().__init__()
         self.url: str = url
         self.token: str = token
-        self.widget = BugReport(version)
+        self.widget = BugReport(version, username)
         self.setTitle('Issue Reporter')
         self.widget.report_created.connect(self.on_report_created)
         self.body_layout.addWidget(self.widget)

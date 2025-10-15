@@ -22,10 +22,11 @@ class BugReport(QtWidgets.QWidget):
     size_label: QtWidgets.QLabel
 
     report_created = QtCore.pyqtSignal(BugReportModel)
-    def __init__(self, version: str) -> None:
+    def __init__(self, version: str, username: str = '') -> None:
         super().__init__()
         loadUi(Path(__file__).parent / 'bug_report.ui', self)
         self.version: str = version
+        self.username: str = username
         self.images_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         self.text_edit = CustomTextEdit()
         self.text_edit.setPlaceholderText('Please enter details or insert image')
@@ -53,7 +54,7 @@ class BugReport(QtWidgets.QWidget):
             self.size_label.setStyleSheet('color: palette(text);')
 
     def on_report_button_pressed(self):
-        details: str = f'v{self.version}\n' + self.text_edit.toPlainText()
+        details: str = self.text_edit.toPlainText()
         title: str = self.title_line_edit.text()
         if not title:
             logger.warning('Title must not be empty')
@@ -66,8 +67,11 @@ class BugReport(QtWidgets.QWidget):
         full_size = 0
         for image_data in images_b64:
             full_size += len(image_data)
-        report = BugReportModel(report_type=report_type, title=title,
-                                details=details, images=images_b64,
+        report = BugReportModel(report_type=report_type,
+                                title=title,
+                                details=details,
+                                images=images_b64,
+                                username=self.username,
                                 version=self.version,
                                 images_size=full_size,
                                 client_version=self.version)
