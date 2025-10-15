@@ -54,6 +54,8 @@ class IssueContentModel(BaseModel):
     title: str
     url: str
     number: int
+    username: str = ''
+    version: str = ''
     is_opened: bool
     content: str
     images: list[str] = Field(default_factory=lambda:[])
