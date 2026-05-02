@@ -1,24 +1,27 @@
 import base64
 from PyQt6 import QtWidgets, QtGui, QtCore
 from qcustomwidgets import Button, ImageBox
-import io
-from PIL import ImageQt
 
 from qissuereporter.image_view.image_viewer import ImageViewer
 
 
 def compress(image: QtGui.QImage, queality: int = 70) -> bytes:
-    buffered = io.BytesIO()
-    img = ImageQt.fromqimage(image).convert('RGB')
-    img.save(buffered, optimize=True, format="JPEG", quality=queality)
-    return buffered.getvalue()
-
+    scaled: QtGui.QImage = image.scaled(
+        int(image.width() * queality / 100),
+        int(image.width() * queality / 100),
+        QtCore.Qt.AspectRatioMode.KeepAspectRatio,
+        QtCore.Qt.TransformationMode.FastTransformation
+    )
+    byte_array = QtCore.QByteArray()
+    buffer = QtCore.QBuffer(byte_array)
+    buffer.open(QtCore.QIODevice.OpenModeFlag.WriteOnly)
+    scaled.save(buffer, 'PNG')
+    return buffer.data()  # type: ignore
 
 class Screenshot(Button):
     about_to_close = QtCore.pyqtSignal(QtWidgets.QWidget)
     def __init__(self, image: QtGui.QImage, closable: bool = True) -> None:
-        super().__init__('', [ImageBox(image)], flat=False,
-                         full_size_image=True, side_margins=0)
+        super().__init__('', [ImageBox(image)], flat=False)
         self.source: QtGui.QImage = image
         self.image_view = ImageViewer(self.source)
         self.image = ImageBox(image)
